@@ -1,18 +1,40 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
+#include <malloc.h>
 #define BACKSPACE_KEY 8
-#define START_CHAR_RANGE 32
-#define END_CHAR_RANGE 1103
+#define START_CHAR_RANGE -232
+#define END_CHAR_RANGE 232
 #define START 1
-#define EXIT 2
+#define SEE 2
+#define INFO 3
+#define EXIT 4
 
 int working = 1;
 
-void string()
+void info(char* userStr)
 {
     setlocale(LC_ALL, "");
-    char* userStr = (char*)malloc(1 * sizeof(char));
+    for (int i = 0; i < strlen(userStr); i++)
+    {
+        if (userStr[i] == 32)
+            printf("Пробел\n");
+        else if (userStr[i] == 44)
+        {
+            printf("Знак препинания\n");
+        }
+        else
+        {
+            printf("Символ\n");
+        }
+    }
+}
+
+void string(char* userStr)
+{
+    free(userStr);
+    userStr = (char*)malloc(1 * sizeof(char));
+    _wsetlocale(LC_ALL, "");
     userStr[0] = '\0';
     char curChar = 0;
     int curSize = 1;
@@ -58,34 +80,40 @@ void string()
             printf("Why?");
             break;
         }
-
-            printf("%c", curChar);
     }
-    printf("\nEntered string: %s", userStr);
+    printf("\nEntered string: ");
+    for (int i = 0; i < strlen(userStr); i++)
+        printf("%c", userStr[i]);
     printf("\n");
 }
 
 int main()
 {
+    _wsetlocale(LC_ALL, "");
     int message = 0;
     char* userStr = (char*)malloc(1 * sizeof(char));
     while (working)
     {
         printf("===================================\n");
-        printf("%p\n", 'п');
         printf("Welcome to the program!\n");
         printf("1. Enter your string\n");
-        printf("2. Exit\n");
+        printf("2. See your string\n");
+        printf("3. See an info about your word\n");
+        printf("4. Exit\n");
         printf("===================================\n");
 
         scanf("%d", &message);
-        fflush(stdout);
         switch(message)
         {
         case START:
-            fflush(stdout);
             fflush(stdin);
             string(userStr);
+            break;
+        case SEE:
+            printf("%s\n", userStr);
+            break;
+        case INFO:
+            info(userStr);
             break;
         case EXIT:
             printf("Quiting from the program\n");
@@ -96,7 +124,6 @@ int main()
             printf("Unusual Enter\n");
         }
     }
-
 
     return 0;
 }
