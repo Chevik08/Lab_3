@@ -2,39 +2,69 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <malloc.h>
+#include <string.h>
+#include <ctype.h>
+#include <conio.h>
+
 #define BACKSPACE_KEY 8
-#define START_CHAR_RANGE -232
-#define END_CHAR_RANGE 232
+#define START_CHAR_RANGE -1105
+#define END_CHAR_RANGE 1105
 #define START 1
 #define SEE 2
 #define INFO 3
-#define EXIT 4
+#define LOAD 4
+#define EXIT 5
 
 int working = 1;
+
+void load(char* userStr)
+{
+    FILE* file;
+    file = fopen("C:/Users/Пользователь/Desktop/Projects/Lab_3/Test/load.txt", "wt");
+    fprintf(file, userStr);
+    fclose(file);
+}
 
 void info(char* userStr)
 {
     setlocale(LC_ALL, "");
+    int blank = 0;
+    int marks = 0;
+    int Big_lits = 0;
+    int Litl_lits = 0;
     for (int i = 0; i < strlen(userStr); i++)
     {
         if (userStr[i] == 32)
-            printf("Пробел\n");
-        else if (userStr[i] == 44)
-        {
-            printf("Знак препинания\n");
-        }
-        else
-        {
-            printf("Символ\n");
-        }
+            blank += 1;
+        else if (userStr[i] >= 33 && userStr[i] <= 47)
+            marks += 1;
+        else if (userStr[i] >= 58 && userStr[i] <= 64)
+            marks += 1;
+        else if (userStr[i] >= 91 && userStr[i] <= 96)
+            marks += 1;
+
+        if (userStr[i] >= 65 && userStr[i] <= 90)
+            Big_lits += 1;
+        else if (userStr[i] >= -128 && userStr[i] <= -97)
+            Big_lits += 1;
+        else if (userStr[i] >= -97 && userStr[i] <= -17)
+            Litl_lits += 1;
+        else if (userStr[i] >= 97 && userStr[i] <= 122)
+            Litl_lits += 1;
     }
+    printf("В тексте было найдено:\n");
+    printf("Пробелов: %d\n", blank);
+    printf("Знаков препинания: %d\n", marks);
+    printf("Заглавных букв: %d\n", Big_lits);
+    printf("Прописных букв: %d\n", Litl_lits);
+    printf("\n");
 }
 
-void string(char* userStr)
+char* string(char* userStr)
 {
-    free(userStr);
-    userStr = (char*)malloc(1 * sizeof(char));
     _wsetlocale(LC_ALL, "");
+    free(userStr);
+    userStr = (char*)malloc(1*sizeof(char));
     userStr[0] = '\0';
     char curChar = 0;
     int curSize = 1;
@@ -85,13 +115,15 @@ void string(char* userStr)
     for (int i = 0; i < strlen(userStr); i++)
         printf("%c", userStr[i]);
     printf("\n");
+
+    return userStr;
 }
 
 int main()
 {
-    _wsetlocale(LC_ALL, "");
     int message = 0;
-    char* userStr = (char*)malloc(1 * sizeof(char));
+    char* userStr = NULL;
+    userStr = (char*)malloc(1*sizeof(char));
     while (working)
     {
         printf("===================================\n");
@@ -99,21 +131,28 @@ int main()
         printf("1. Enter your string\n");
         printf("2. See your string\n");
         printf("3. See an info about your word\n");
-        printf("4. Exit\n");
+        printf("4. Export to the file\n");
+        printf("5. Exit\n");
         printf("===================================\n");
 
         scanf("%d", &message);
+        fflush(stdin);
         switch(message)
         {
         case START:
-            fflush(stdin);
-            string(userStr);
+            userStr = string(userStr);
+            printf("%s\n", userStr);
             break;
         case SEE:
-            printf("%s\n", userStr);
+            for (int i = 0; i < strlen(userStr); i++)
+                printf("%c", userStr[i]);
+            printf("\n");
             break;
         case INFO:
             info(userStr);
+            break;
+        case LOAD:
+            load(userStr);
             break;
         case EXIT:
             printf("Quiting from the program\n");
