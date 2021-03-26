@@ -12,20 +12,41 @@
 #define START 1
 #define SEE 2
 #define INFO 3
-#define LOAD 4
-#define EXIT 5
+#define EXP 4
+#define LOAD 5
+#define EXIT 6
 
 int working = 1;
 
-void load(char* userStr)
+void exp(char* userStr, int* param)
 {
     FILE* file;
-    file = fopen("C:/Users/Пользователь/Desktop/Projects/Lab_3/Test/load.txt", "wt");
-    fprintf(file, userStr);
+    file = fopen("C:/Users/student/Desktop/FastFolder/Lab_3/load.txt", "a+");
+    fprintf(file,"%s\n", userStr);
+    fprintf(file, "В тексте было найдено:\n");
+    fprintf(file, "Пробелов: %d\n", param[0]);
+    fprintf(file, "Знаков препинания: %d\n", param[1]);
+    fprintf(file, "Заглавных букв: %d\n", param[2]);
+    fprintf(file, "Прописных букв: %d\n", param[3]);
+    fprintf(file, "\n");
     fclose(file);
 }
 
-void info(char* userStr)
+void load()
+{
+    setlocale(LC_ALL, "");
+    FILE* file;
+    char buffer[128];
+    file = fopen("C:/Users/student/Desktop/FastFolder/Lab_3/load.txt", "r");
+    printf("You file:\n");
+    while (fscanf(file,"%c", buffer)==1)
+    {
+        printf("%s", buffer);
+    }
+    fclose(file);
+}
+
+void info(char* userStr, int* param)
 {
     setlocale(LC_ALL, "");
     int blank = 0;
@@ -45,6 +66,8 @@ void info(char* userStr)
 
         if (userStr[i] >= 65 && userStr[i] <= 90)
             Big_lits += 1;
+        else if (userStr[i] == -16)
+            Big_lits += 1;
         else if (userStr[i] >= -128 && userStr[i] <= -97)
             Big_lits += 1;
         else if (userStr[i] >= -97 && userStr[i] <= -17)
@@ -52,12 +75,11 @@ void info(char* userStr)
         else if (userStr[i] >= 97 && userStr[i] <= 122)
             Litl_lits += 1;
     }
-    printf("В тексте было найдено:\n");
-    printf("Пробелов: %d\n", blank);
-    printf("Знаков препинания: %d\n", marks);
-    printf("Заглавных букв: %d\n", Big_lits);
-    printf("Прописных букв: %d\n", Litl_lits);
-    printf("\n");
+
+    param[0] = blank;
+    param[1] = marks;
+    param[2] = Big_lits;
+    param[3] = Litl_lits;
 }
 
 char* string(char* userStr)
@@ -107,14 +129,11 @@ char* string(char* userStr)
         }
         else
         {
-            printf("Why?");
+            printf("Memory Error/n");
             break;
         }
     }
     printf("\nEntered string: ");
-    for (int i = 0; i < strlen(userStr); i++)
-        printf("%c", userStr[i]);
-    printf("\n");
 
     return userStr;
 }
@@ -124,15 +143,17 @@ int main()
     int message = 0;
     char* userStr = NULL;
     userStr = (char*)malloc(1*sizeof(char));
+    int* param = (int*)calloc(4, sizeof(int*));
     while (working)
     {
         printf("===================================\n");
         printf("Welcome to the program!\n");
         printf("1. Enter your string\n");
         printf("2. See your string\n");
-        printf("3. See an info about your word\n");
+        printf("3. See an info about your string\n");
         printf("4. Export to the file\n");
-        printf("5. Exit\n");
+        printf("5. See your file\n");
+        printf("6. Exit\n");
         printf("===================================\n");
 
         scanf("%d", &message);
@@ -149,14 +170,25 @@ int main()
             printf("\n");
             break;
         case INFO:
-            info(userStr);
+        info(userStr, param);
+        printf("В тексте было найдено:\n");
+        printf("Пробелов: %d\n", param[0]);
+        printf("Знаков препинания: %d\n", param[1]);
+        printf("Заглавных букв: %d\n", param[2]);
+        printf("Прописных букв: %d\n", param[3]);
+        printf("\n");
+            break;
+        case EXP:
+            info(userStr, param);
+            exp(userStr, param);
             break;
         case LOAD:
-            load(userStr);
+            load();
             break;
         case EXIT:
             printf("Quiting from the program\n");
             free(userStr);
+            free(param);
             working = 0;
             break;
         default:
